@@ -3,7 +3,7 @@ import { customElement, property, state } from "lit/decorators.js";
 import './monster-card.js'
 import { TYPE_COLORS } from "../constants.js";
 
-interface Monster {
+export interface Monster {
   id: number
   name: string
   image: string
@@ -31,6 +31,7 @@ export class MonsterOverview extends LitElement {
 
   @state() private monsters: Monster[] = []
   @state() private selectedTypes = new Set<string>()
+  @state() private filterOpen = true
   @state() private loading = true
   @state() private error = ''
 
@@ -88,26 +89,31 @@ export class MonsterOverview extends LitElement {
 
       <div class="layout">
         <aside class="filter">
-          <h2>Filter</h2>
-          <h3>Type</h3>
-          <ul>
-            ${this.allTypes.map(
-              type => html`
-                <li>
-                  <label>
-                    <input
-                      type="checkbox"
-                      .checked=${this.selectedTypes.has(type)}
-                      @change=${() => this.toggleType(type)}
-                    />
-                    ${type}
-                    <span class="dot" style="background-color: ${TYPE_COLORS[type] ?? '#ccc'}"></span>
-                  </label>
-                </li>
-              `
+          <button class="filter-toggle" @click=${() => (this.filterOpen = !this.filterOpen)}>
+    Filter
+          <span class="arrow">${this.filterOpen ? '▲' : '▼'}</span>
+          </button>
+    ${this.filterOpen ? html`
+      <h2>Type</h2>
+      <ul>
+        ${this.allTypes.map(
+          type => html`
+            <li>
+              <label>
+                <input
+                  type="checkbox"
+                  .checked=${this.selectedTypes.has(type)}
+                  @change=${() => this.toggleType(type)}
+                />
+                ${type}
+                <span class="dot" style="background-color: ${TYPE_COLORS[type] ?? '#ccc'}"></span>
+              </label>
+            </li>
+          `
     )}
-          </ul>
-        </aside>
+    </ul>
+  ` : ''}
+</aside>
 
         <div class="grid">
           ${this.loading
@@ -153,7 +159,7 @@ export class MonsterOverview extends LitElement {
       flex: 1;
       overflow: hidden;
       min-height: 0;
-}
+    }
 
     aside.filter {
       width: 200px;
@@ -162,6 +168,18 @@ export class MonsterOverview extends LitElement {
       border-radius: 8px;
       padding: 16px;
       overflow-y: auto;
+      align-self: flex-start;
+      max-height: 100%;
+      background: #fff;
+      color: #333;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      aside.filter {
+        background: #1e1f28;
+        color: #e0e0e0;
+        border-color: #3a3b47;
+      }
     }
 
     .filter .dot {
@@ -172,15 +190,28 @@ export class MonsterOverview extends LitElement {
       margin-left: 4px;
     }
 
-    h2 {
-      margin: 0 0 12px;
+    .filter-toggle {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      background: none;
+      border: none;
+      padding: 0 0 12px;
       font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      color: inherit;
     }
 
-    h3 {
+    .arrow {
+      font-size: 12px;
+    }
+
+    h2 {
       margin: 0 0 8px;
       font-size: 14px;
-      color: #666;
+      color: #e7dada;
     }
 
     ul {

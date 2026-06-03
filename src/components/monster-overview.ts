@@ -95,7 +95,7 @@ export class MonsterOverview extends LitElement {
         <aside class="filter">
           <button class="filter-toggle" @click=${() => (this.filterOpen = !this.filterOpen)}>
     Filter
-          <span class="arrow">${this.filterOpen ? '▲' : '▼'}</span>
+          <span class="arrow" aria-hidden="true">${this.filterOpen ? '▲' : '▼'}</span>
           </button>
     ${this.filterOpen ? html`
       <h2>Type</h2>
@@ -124,17 +124,19 @@ export class MonsterOverview extends LitElement {
       ? html`<p>Loading...</p>`
       : this.error
         ? html`<p class="error">${this.error}</p>`
-        : this.filteredMonsters.map(
-          m => html`
-            <monster-card
-              .monsterId=${m.id}
-              .name=${m.name}
-              .image=${m.image}
-              .types=${m.types}
-              href="/monster/${m.id}"
-            ></monster-card>
-          `
-        )}
+        : this.filteredMonsters.length === 0
+          ? html`<p>No monsters found.</p>`
+          : this.filteredMonsters.map(
+              m => html`
+                <monster-card
+                  .monsterId=${m.id}
+                  .name=${m.name}
+                  .image=${m.image}
+                  .types=${m.types}
+                  href="/monster/${m.id}"
+                ></monster-card>
+              `
+            )}
         </div>
       </div>
     `

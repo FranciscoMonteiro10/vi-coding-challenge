@@ -1,6 +1,6 @@
 import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import { TYPE_COLORS } from "../constants";
+import { TYPE_COLORS } from "../constants.js";
 
 @customElement('monster-card')
 export class MonsterCard extends LitElement {

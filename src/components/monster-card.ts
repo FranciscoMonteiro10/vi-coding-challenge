@@ -2,36 +2,36 @@ import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators.js";
 
 const TYPE_COLORS: Record<string, string> = {
-    normal: '#A8A878',
-    fire: '#F08030',
-    water: '#6890F0',
-    electric: '#F8D030',
-    grass: '#78C850',
-    ice: '#98D8D8',
-    fighting: '#C03028',
-    poison: '#A040A0',
-    ground: '#E0C068',
-    flying: '#A890F0',
-    psychic: '#F85888',
-    bug: '#A8B820',
-    rock: '#B8A038',
-    ghost: '#705898',
-    dragon: '#7038F8',
-    dark: '#705848',
-    steel: '#B8B8D0',
-    fairy: '#EE99AC',
+  normal: '#A8A878',
+  fire: '#F08030',
+  water: '#6890F0',
+  electric: '#F8D030',
+  grass: '#78C850',
+  ice: '#98D8D8',
+  fighting: '#C03028',
+  poison: '#A040A0',
+  ground: '#E0C068',
+  flying: '#A890F0',
+  psychic: '#F85888',
+  bug: '#A8B820',
+  rock: '#B8A038',
+  ghost: '#705898',
+  dragon: '#7038F8',
+  dark: '#705848',
+  steel: '#B8B8D0',
+  fairy: '#EE99AC',
 }
 
 @customElement('monster-card')
 export class MonsterCard extends LitElement {
-    @property({ type: Number }) monsterId = 0
-    @property() name = ''
-    @property() image = ''
-    @property({ type: Array }) types: string[] = []
-    @property() href = ''
+  @property({ type: Number }) monsterId = 0
+  @property() name = ''
+  @property() image = ''
+  @property({ type: Array }) types: string[] = []
+  @property() href = ''
 
-    render() {
-        return html`
+  render() {
+    return html`
       <a href=${this.href || '#'}>
         <div class="card">
           <span class="number">#${this.monsterId}</span>
@@ -40,21 +40,21 @@ export class MonsterCard extends LitElement {
             <span class="name">${this.name}</span>
             <div class="types">
               ${this.types.map(
-            type => html`
+                type => html`
                   <span
                     class="dot"
                     style="background-color: ${TYPE_COLORS[type] ?? '#ccc'}"
                   ></span>
                 `
-        )}
+    )}
             </div>
           </div>
         </div>
       </a>
     `
-    }
+  }
 
-    static styles = css`
+  static styles = css`
     :host {
       display: block;
     }
@@ -115,7 +115,7 @@ export class MonsterCard extends LitElement {
 }
 
 declare global {
-    interface HTMLElementTagNameMap {
-        'monster-card': MonsterCard
-    }
+  interface HTMLElementTagNameMap {
+    'monster-card': MonsterCard
+  }
 }

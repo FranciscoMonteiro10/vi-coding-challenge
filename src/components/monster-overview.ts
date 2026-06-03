@@ -3,76 +3,76 @@ import { customElement, property, state } from "lit/decorators.js";
 import './monster-card.js'
 
 interface Monster {
-    id: number
-    name: string
-    image: string
-    types: string[]
+  id: number
+  name: string
+  image: string
+  types: string[]
 }
 
 interface PokemonApiResult {
-    url: string
+  url: string
 }
 
 interface PokemonApiResponse {
-    results: PokemonApiResult[]
+  results: PokemonApiResult[]
 }
 
 interface PokemonDetail {
-    id: number
-    name: string
-    sprites: { front_default: string }
-    types: { type: { name: string } }[]
+  id: number
+  name: string
+  sprites: { front_default: string }
+  types: { type: { name: string } }[]
 }
 
 @customElement('monster-overview')
 export class MonsterOverview extends LitElement {
-    @property() headline = ''
+  @property() headline = ''
 
-    @state() private monsters: Monster[] = []
-    @state() private selectedTypes = new Set<string>()
-    @state() private loading = true
+  @state() private monsters: Monster[] = []
+  @state() private selectedTypes = new Set<string>()
+  @state() private loading = true
 
-    private get allTypes(): string[] {
-        const types = new Set<string>()
-        this.monsters.forEach(m => m.types.forEach(t => types.add(t)))
-        return Array.from(types).sort()
-    }
+  private get allTypes(): string[] {
+    const types = new Set<string>()
+    this.monsters.forEach(m => m.types.forEach(t => types.add(t)))
+    return Array.from(types).sort()
+  }
 
-    private get filteredMonsters(): Monster[] {
-        if (this.selectedTypes.size === 0) return this.monsters
-        return this.monsters.filter(m => m.types.some(t => this.selectedTypes.has(t)))
-    }
+  private get filteredMonsters(): Monster[] {
+    if (this.selectedTypes.size === 0) return this.monsters
+    return this.monsters.filter(m => m.types.some(t => this.selectedTypes.has(t)))
+  }
 
-    async connectedCallback() {
-        super.connectedCallback()
-        await this.fetchMonsters()
-    }
+  async connectedCallback() {
+    super.connectedCallback()
+    await this.fetchMonsters()
+  }
 
-    private async fetchMonsters() {
-        const res = await fetch('https://pokeapi.co/api/v2/pokemon?limit=151')
-        const data: PokemonApiResponse = await res.json()
+  private async fetchMonsters() {
+    const res = await fetch('https://pokeapi.co/api/v2/pokemon?limit=151')
+    const data: PokemonApiResponse = await res.json()
 
-        const details = await Promise.all(
-            data.results.map(({ url }) => fetch(url).then(r => r.json() as Promise<PokemonDetail>))
-        )
+    const details = await Promise.all(
+      data.results.map(({ url }) => fetch(url).then(r => r.json() as Promise<PokemonDetail>))
+    )
 
-        this.monsters = details.map(d => ({
-            id: d.id,
-            name: d.name,
-            image: d.sprites.front_default,
-            types: d.types.map(t => t.type.name),
-        }))
-        this.loading = false
-    }
+    this.monsters = details.map(d => ({
+      id: d.id,
+      name: d.name,
+      image: d.sprites.front_default,
+      types: d.types.map(t => t.type.name),
+    }))
+    this.loading = false
+  }
 
-    private toggleType(type: string) {
-        const next = new Set(this.selectedTypes)
-        next.has(type) ? next.delete(type) : next.add(type)
-        this.selectedTypes = next
-    }
+  private toggleType(type: string) {
+    const next = new Set(this.selectedTypes)
+    next.has(type) ? next.delete(type) : next.add(type)
+    this.selectedTypes = next
+  }
 
-    render() {
-        return html`
+  render() {
+    return html`
       ${this.headline ? html`<h1>${this.headline}</h1>` : ''}
 
       <div class="layout">
@@ -81,7 +81,7 @@ export class MonsterOverview extends LitElement {
           <h3>Type</h3>
           <ul>
             ${this.allTypes.map(
-            type => html`
+              type => html`
                 <li>
                   <label>
                     <input
@@ -93,15 +93,15 @@ export class MonsterOverview extends LitElement {
                   </label>
                 </li>
               `
-        )}
+    )}
           </ul>
         </aside>
 
         <div class="grid">
           ${this.loading
-                ? html`<p>Loading...</p>`
-                : this.filteredMonsters.map(
-                    m => html`
+      ? html`<p>Loading...</p>`
+      : this.filteredMonsters.map(
+        m => html`
                   <monster-card
                     .monsterId=${m.id}
                     .name=${m.name}
@@ -110,13 +110,13 @@ export class MonsterOverview extends LitElement {
                     href="/monster/${m.id}"
                   ></monster-card>
                 `
-                )}
+      )}
         </div>
       </div>
     `
-    }
+  }
 
-    static styles = css`
+  static styles = css`
     :host {
       display: block;
       font-family: system-ui, sans-serif;
@@ -184,7 +184,7 @@ export class MonsterOverview extends LitElement {
 }
 
 declare global {
-    interface HTMLElementTagNameMap {
-        'monster-overview': MonsterOverview
-    }
+  interface HTMLElementTagNameMap {
+    'monster-overview': MonsterOverview
+  }
 }

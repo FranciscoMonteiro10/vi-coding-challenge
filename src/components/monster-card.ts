@@ -1,26 +1,6 @@
 import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators.js";
-
-const TYPE_COLORS: Record<string, string> = {
-  normal: '#A8A878',
-  fire: '#F08030',
-  water: '#6890F0',
-  electric: '#F8D030',
-  grass: '#78C850',
-  ice: '#98D8D8',
-  fighting: '#C03028',
-  poison: '#A040A0',
-  ground: '#E0C068',
-  flying: '#A890F0',
-  psychic: '#F85888',
-  bug: '#A8B820',
-  rock: '#B8A038',
-  ghost: '#705898',
-  dragon: '#7038F8',
-  dark: '#705848',
-  steel: '#B8B8D0',
-  fairy: '#EE99AC',
-}
+import { TYPE_COLORS } from "../constants";
 
 @customElement('monster-card')
 export class MonsterCard extends LitElement {
@@ -98,6 +78,7 @@ export class MonsterCard extends LitElement {
       font-size: 14px;
       font-weight: 500;
       text-transform: capitalize;
+      color: #222;
     }
 
     .types {

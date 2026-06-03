@@ -1,6 +1,7 @@
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import './monster-card.js'
+import { TYPE_COLORS } from "../constants.js";
 
 interface Monster {
   id: number
@@ -90,6 +91,7 @@ export class MonsterOverview extends LitElement {
                       @change=${() => this.toggleType(type)}
                     />
                     ${type}
+                    <span class="dot" style="background-color: ${TYPE_COLORS[type] ?? '#ccc'}"></span>
                   </label>
                 </li>
               `
@@ -118,7 +120,9 @@ export class MonsterOverview extends LitElement {
 
   static styles = css`
     :host {
-      display: block;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
       font-family: system-ui, sans-serif;
       padding: 24px;
       width: 100%;
@@ -134,7 +138,10 @@ export class MonsterOverview extends LitElement {
     .layout {
       display: flex;
       gap: 24px;
-    }
+      flex: 1;
+      overflow: hidden;
+      min-height: 0;
+}
 
     aside.filter {
       width: 200px;
@@ -142,7 +149,15 @@ export class MonsterOverview extends LitElement {
       border: 1px solid #ccc;
       border-radius: 8px;
       padding: 16px;
-      align-self: flex-start;
+      overflow-y: auto;
+    }
+
+    .filter .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-left: 4px;
     }
 
     h2 {
@@ -176,9 +191,11 @@ export class MonsterOverview extends LitElement {
 
     .grid {
       flex: 1;
+      overflow-y: auto;
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
       gap: 16px;
+      align-content: start;
     }
   `
 }

@@ -28,12 +28,13 @@ interface PokemonDetail {
 @customElement('monster-overview')
 export class MonsterOverview extends LitElement {
   @property() headline = ''
+  @property({ type: Array }) monsters: Monster[] = []
+  @property({ type: Boolean }) loading = false
+  @property() error = ''
+  @property({ type: Boolean }) disableFetch = false
 
-  @state() private monsters: Monster[] = []
   @state() private selectedTypes = new Set<string>()
   @state() private filterOpen = true
-  @state() private loading = true
-  @state() private error = ''
 
   private get allTypes(): string[] {
     const types = new Set<string>()
@@ -48,7 +49,10 @@ export class MonsterOverview extends LitElement {
 
   async connectedCallback() {
     super.connectedCallback()
-    await this.fetchMonsters()
+    if (!this.disableFetch && this.monsters.length === 0 && !this.error) {
+      this.loading = true
+      await this.fetchMonsters()
+    }
   }
 
   private async fetchMonsters() {
@@ -145,6 +149,8 @@ export class MonsterOverview extends LitElement {
       padding: 24px;
       width: 100%;
       box-sizing: border-box;
+      max-width: 1100px;
+      margin: 0 auto;
     }
 
     h1 {

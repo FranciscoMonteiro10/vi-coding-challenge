@@ -32,6 +32,7 @@ export class MonsterOverview extends LitElement {
   @state() private monsters: Monster[] = []
   @state() private selectedTypes = new Set<string>()
   @state() private loading = true
+  @state() private error = ''
 
   private get allTypes(): string[] {
     const types = new Set<string>()
@@ -50,20 +51,29 @@ export class MonsterOverview extends LitElement {
   }
 
   private async fetchMonsters() {
-    const res = await fetch('https://pokeapi.co/api/v2/pokemon?limit=151')
-    const data: PokemonApiResponse = await res.json()
+    try {
+      const res = await fetch('https://pokeapi.co/api/v2/pokemon?limit=151')
+      if (!res.ok) throw new Error(`API error: ${res.status}`)
+      const data: PokemonApiResponse = await res.json()
 
-    const details = await Promise.all(
-      data.results.map(({ url }) => fetch(url).then(r => r.json() as Promise<PokemonDetail>))
-    )
+      const details = await Promise.all(
+        data.results.map(({ url }) => fetch(url).then(r => {
+          if (!r.ok) throw new Error(`Failed to fetch ${url}`)
+          return r.json() as Promise<PokemonDetail>
+        }))
+      )
 
-    this.monsters = details.map(d => ({
-      id: d.id,
-      name: d.name,
-      image: d.sprites.front_default,
-      types: d.types.map(t => t.type.name),
-    }))
-    this.loading = false
+      this.monsters = details.map(d => ({
+        id: d.id,
+        name: d.name,
+        image: d.sprites.front_default,
+        types: d.types.map(t => t.type.name),
+      }))
+    } catch (e) {
+      this.error = e instanceof Error ? e.message : 'Something went wrong'
+    } finally {
+      this.loading = false
+    }
   }
 
   private toggleType(type: string) {
@@ -102,17 +112,19 @@ export class MonsterOverview extends LitElement {
         <div class="grid">
           ${this.loading
       ? html`<p>Loading...</p>`
-      : this.filteredMonsters.map(
-        m => html`
-                  <monster-card
-                    .monsterId=${m.id}
-                    .name=${m.name}
-                    .image=${m.image}
-                    .types=${m.types}
-                    href="/monster/${m.id}"
-                  ></monster-card>
-                `
-      )}
+      : this.error
+        ? html`<p class="error">${this.error}</p>`
+        : this.filteredMonsters.map(
+          m => html`
+            <monster-card
+              .monsterId=${m.id}
+              .name=${m.name}
+              .image=${m.image}
+              .types=${m.types}
+              href="/monster/${m.id}"
+            ></monster-card>
+          `
+        )}
         </div>
       </div>
     `
@@ -187,6 +199,11 @@ export class MonsterOverview extends LitElement {
       font-size: 14px;
       text-transform: capitalize;
       cursor: pointer;
+    }
+
+    .error {
+      color: #e53e3e;
+      padding: 16px;
     }
 
     .grid {
